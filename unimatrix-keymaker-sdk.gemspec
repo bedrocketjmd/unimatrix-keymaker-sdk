@@ -7,9 +7,9 @@ Gem::Specification.new do |spec|
   spec.name          = "unimatrix-keymaker-sdk"
   spec.version       = Unimatrix::Keymaker::Sdk::VERSION
   spec.authors       = ["David Bragdon"]
-  spec.email         = ["davidbragdon@bedrocket.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.email         = ["davidbragdon@sportsrocket.com"]
+  spec.summary       = %q{Sportsrocket SDK, used to communicate with Keymaker.}
+  spec.description   = %q{}
   spec.homepage      = ""
   spec.license       = "MIT"
 
