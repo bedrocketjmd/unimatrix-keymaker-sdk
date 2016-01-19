@@ -11,16 +11,22 @@ module Unimatrix
         end
 
         def before( controller )
-          result = false
           access_token = controller.params[ 'access_token' ]
           realm = controller.realm.uuid
           if access_token.present?
             str      = "realm/#{ realm }::#{ @application }::#{ @resource }/*"
             params   = "resource=#{ str }&access_token=#{ access_token }"
             uri      = URI.parse( "#{ ENV[ 'KEYMAKER_URL' ] }/policies?#{ params }" )
-            response = Net::HTTP.get( uri )
-            binding.pry
-            controller.policies = JSON.parse( response )[ 'policies' ] rescue nil if response
+            response = Net::HTTP.get( uri ) rescue nil
+
+            if response
+              controller.policies = JSON.parse( response )[ 'policies' ] rescue nil
+            else
+              controller.render_error(
+                ApplicationError,
+                "The requested policies could not be retrieved from Keymaker."
+              )
+            end
           else
             controller.render_error( 
               MissingParameterError,
