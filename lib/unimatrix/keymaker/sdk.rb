@@ -20,7 +20,19 @@ module Unimatrix
             response = Net::HTTP.get( uri ) rescue nil
 
             if response
-              controller.policies = JSON.parse( response )[ 'policies' ] rescue nil
+              policies = JSON.parse( response )[ 'policies' ] rescue nil
+              forbidden = true
+
+              policies.each do | policy |
+                forbidden = false if policy[ 'actions' ].include?( controller.action_name )
+              end
+
+              if forbidden
+                controller.render_error(
+                  ForbiddenError,
+                  "A policy permitting this action was not found."
+                )
+              end
             else
               controller.render_error(
                 ApplicationError,
@@ -48,15 +60,6 @@ module Unimatrix
         controller.extend( ClassMethods )
       end
 
-      def permitted?
-        return false if policies.blank?
-
-        policies.each do | policy |
-          return true if policy[ 'actions' ].include?( action_name )
-        end
-
-        false
-      end
     end
   end
 end
