@@ -23,8 +23,10 @@ module Unimatrix
               policies = JSON.parse( response )[ 'policies' ] rescue nil
               forbidden = true
 
-              policies.each do | policy |
-                forbidden = false if policy[ 'actions' ].include?( controller.action_name )
+              ( policies || [] ).each do | policy |
+                if policy[ 'actions' ].include?( controller.action_name )
+                  forbidden = false
+                end
               end
 
               if forbidden
