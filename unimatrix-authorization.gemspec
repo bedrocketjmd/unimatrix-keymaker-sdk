@@ -1,14 +1,14 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'unimatrix/keymaker/sdk/version'
+require 'unimatrix/authorization/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "unimatrix-keymaker-sdk"
-  spec.version       = Unimatrix::Keymaker::Sdk::VERSION
+  spec.name          = "unimatrix-authorization"
+  spec.version       = Unimatrix::Authorization::VERSION
   spec.authors       = ["David Bragdon"]
   spec.email         = ["davidbragdon@sportsrocket.com"]
-  spec.summary       = %q{Sportsrocket SDK, used to communicate with Keymaker.}
+  spec.summary       = %q{Unimatrix::Authorization is used to communicate with Keymaker.}
   spec.description   = %q{}
   spec.homepage      = ""
   spec.license       = "MIT"

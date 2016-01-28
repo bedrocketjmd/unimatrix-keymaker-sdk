@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in unimatrix-keymaker-sdk.gemspec
+# Specify your gem's dependencies in unimatrix-authorization.gemspec
 gemspec
