@@ -8,7 +8,8 @@ module Unimatrix
       end
 
       def before( controller )
-        access_token = controller.params[ 'access_token' ]
+        access_token = controller.params[ 'access_token' ] ||
+                       Rails.application.config.client_access_token
         realm = controller.realm.uuid
         if access_token.present?
           str      = "realm/#{ realm }::#{ @application }::#{ @resource }/*"
