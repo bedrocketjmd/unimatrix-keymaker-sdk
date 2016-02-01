@@ -8,8 +8,7 @@ module Unimatrix
       end
 
       def before( controller )
-        access_token = controller.params[ 'access_token' ] ||
-                       Rails.application.config.client_access_token
+        access_token = controller.params[ 'access_token' ]
         realm = controller.realm.uuid
         if access_token.present?
           str      = "realm/#{ realm }::#{ @application }::#{ @resource }/*"
@@ -42,8 +41,7 @@ module Unimatrix
         else
           controller.render_error( 
             MissingParameterError,
-            "The parameter 'access_token' is required, or a client_access_token " +
-            "must be set in the Rails config."
+            "The parameter 'access_token' is required."
           ) 
         end
       end
