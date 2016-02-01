@@ -42,7 +42,8 @@ module Unimatrix
         else
           controller.render_error( 
             MissingParameterError,
-            "The parameter 'access_token' is required."
+            "The parameter 'access_token' is required, or a client_access_token " +
+            "must be set in the Rails config."
           ) 
         end
       end
