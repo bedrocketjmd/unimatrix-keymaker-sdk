@@ -48,8 +48,11 @@ module Unimatrix
     end
 
     module ClassMethods
-      def requires_policies( application, resource )
-        before_filter( RequiresPolicies.new( application, resource ) )
+      def requires_policies( application, resource, options = {} )
+        before_filter(
+          RequiresPolicies.new( application, resource ),
+          options
+        )
       end
     end
 
