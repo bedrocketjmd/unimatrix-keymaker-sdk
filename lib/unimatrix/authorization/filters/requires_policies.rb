@@ -33,7 +33,7 @@ module Unimatrix
             end
           else
             controller.render_error(
-              ApplicationError,
+              NotFoundError,
               "The requested policies could not be retrieved."
             )
           end
