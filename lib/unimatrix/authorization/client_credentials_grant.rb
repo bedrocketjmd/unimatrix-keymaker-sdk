@@ -1,3 +1,5 @@
+require 'net/http'
+
 module Unimatrix
   module Authorization
     class ClientCredentialsGrant
