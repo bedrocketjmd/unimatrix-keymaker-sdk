@@ -14,11 +14,16 @@ module Unimatrix
           response = keymaker_response
 
           if response
-            policies = JSON.parse( response )[ 'policies' ] rescue nil
+            policies = JSON.parse( response )[ 'policies' ] rescue []
             forbidden = true
 
-            ( policies || [] ).each do | policy |
-              if policy[ 'actions' ].include?( controller.action_name )
+            policies.each do | policy |
+              controller_action_allowed = policy['actions'].detect do |action|
+                controller.action_name.include?( action )
+              end.present?
+
+              if policy[ 'actions' ].include?( controller.action_name ) ||
+                 controller_action_allowed
                 forbidden = false
               end
             end
