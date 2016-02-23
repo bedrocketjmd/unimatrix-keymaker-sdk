@@ -3,17 +3,15 @@ module Unimatrix
     class RequiresPolicies
 
       def initialize( resource )
-        @resource = resource
+        @resource_name = resource
       end
 
       def before( controller )
-        access_token = controller.params[ 'access_token' ]
-        realm = controller.realm.uuid
-        if access_token.present?
-          str      = "realm/#{ realm }::#{ ENV[ 'APPLICATION_NAME' ] }::#{ @resource }/*"
-          params   = "resource=#{ str }&access_token=#{ access_token }"
-          uri      = URI.parse( "#{ ENV[ 'KEYMAKER_URL' ] }/policies?#{ params }" )
-          response = Net::HTTP.get( uri ) rescue nil
+        @access_token = controller.params[ 'access_token' ]
+        @realm_uuid = controller.realm.uuid
+
+        if @access_token.present?
+          response = keymaker_response
 
           if response
             policies = JSON.parse( response )[ 'policies' ] rescue nil
@@ -44,6 +42,14 @@ module Unimatrix
           ) 
         end
       end
+
+      def keymaker_response
+        resource = "realm/#{ @realm_uuid }::#{ ENV['APPLICATION_NAME'] }::#{ @resource_name }/*"
+        params   = "resource=#{ resource }&access_token=#{ @access_token }"
+        uri      = URI.parse( "#{ ENV['KEYMAKER_URL'] }/policies?#{ params }" )
+        Net::HTTP.get( uri ) rescue nil
+      end
+
     end
 
     module ClassMethods
