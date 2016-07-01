@@ -8,7 +8,7 @@ module Unimatrix
 
       def before( controller )
         @access_token = controller.params[ 'access_token' ]
-        @realm_uuid = controller.realm.uuid
+        @realm_uuid = controller.realm_uuid || controller.realm.uuid
 
         if @access_token.present?
           response = keymaker_response
