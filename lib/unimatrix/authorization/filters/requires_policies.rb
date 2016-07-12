@@ -11,10 +11,9 @@ module Unimatrix
         @realm_uuid = controller.realm_uuid || controller.realm.uuid
 
         if @access_token.present?
-          response = keymaker_response
 
-          if response
-            policies = JSON.parse( response )[ 'policies' ] rescue nil
+          if policies
+            
             forbidden = true
 
             ( policies || [] ).each do | policy |
@@ -43,13 +42,6 @@ module Unimatrix
         end
       end
 
-      def keymaker_response
-        resource = "realm/#{ @realm_uuid }::#{ ENV['APPLICATION_NAME'] }::#{ @resource_name }/*"
-        params   = "resource=#{ resource }&access_token=#{ @access_token }"
-        uri      = URI.parse( "#{ ENV['KEYMAKER_URL'] }/policies?#{ params }" )
-        Net::HTTP.get( uri ) rescue nil
-      end
-
     end
 
     module ClassMethods
@@ -59,10 +51,21 @@ module Unimatrix
           options
         )
       end
+
     end
 
     def self.included( controller )
       controller.extend( ClassMethods )
+    end
+
+    def policies
+      @policies ||= begin
+        resource = "realm/#{ @realm_uuid }::#{ ENV['APPLICATION_NAME'] }::#{ @resource_name }/*"
+        params   = "resource=#{ resource }&access_token=#{ @access_token }"
+        uri      = URI.parse( "#{ ENV['KEYMAKER_URL'] }/policies?#{ params }" )
+        response = Net::HTTP.get( uri )
+        JSON.parse( response )[ 'policies' ] rescue nil
+      end
     end
   end
 end
