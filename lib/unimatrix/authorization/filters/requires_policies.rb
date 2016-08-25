@@ -70,7 +70,7 @@ module Unimatrix
       end
     end
 
-    private; def retrieve_policies( resource_name, access_token, realm )
+    def retrieve_policies( resource_name, access_token, realm )
       if resource_name && access_token && realm
         resource = "realm/#{ realm }::#{ ENV['APPLICATION_NAME'] }::#{ resource_name }/*"
         params   = "resource=#{ resource }&access_token=#{ access_token }"
