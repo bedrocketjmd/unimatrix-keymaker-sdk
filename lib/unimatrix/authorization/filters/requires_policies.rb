@@ -10,7 +10,7 @@ module Unimatrix
         access_token = controller.params[ 'access_token' ]
         realm_uuid = controller.realm_uuid || controller.realm.uuid
 
-        if @access_token.present?
+        if access_token.present?
           policies = controller.retrieve_policies( 
                       @resource_name, access_token, realm_uuid
                     )
