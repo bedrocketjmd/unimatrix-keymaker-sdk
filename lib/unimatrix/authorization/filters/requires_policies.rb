@@ -6,17 +6,14 @@ module Unimatrix
         @resource_name = resource
       end
 
-      def policies
-        @policies ||= retrieve_policies( @resource_name, @access_token, @realm_uuid )
-      end
-
       def before( controller )
-        @policies = nil
-        @access_token = controller.params[ 'access_token' ]
-        @realm_uuid = controller.realm_uuid || controller.realm.uuid
+        access_token = controller.params[ 'access_token' ]
+        realm_uuid = controller.realm_uuid || controller.realm.uuid
 
         if @access_token.present?
-
+          policies = controller.retrieve_policies( 
+                      @resource_name, access_token, realm_uuid
+                    )
           if policies
             controller.policies = policies
             
