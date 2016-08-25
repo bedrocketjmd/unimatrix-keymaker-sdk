@@ -60,11 +60,13 @@ module Unimatrix
 
     def policies
       @policies ||= begin
-        resource = "realm/#{ @realm_uuid }::#{ ENV['APPLICATION_NAME'] }::#{ @resource_name }/*"
-        params   = "resource=#{ resource }&access_token=#{ @access_token }"
-        uri      = URI.parse( "#{ ENV['KEYMAKER_URL'] }/policies?#{ params }" )
-        response = Net::HTTP.get( uri )
-        JSON.parse( response )[ 'policies' ] rescue nil
+        if @resource_name && @access_token
+          resource = "realm/#{ @realm_uuid }::#{ ENV['APPLICATION_NAME'] }::#{ @resource_name }/*"
+          params   = "resource=#{ resource }&access_token=#{ @access_token }"
+          uri      = URI.parse( "#{ ENV['KEYMAKER_URL'] }/policies?#{ params }" )
+          response = Net::HTTP.get( uri )
+          JSON.parse( response )[ 'policies' ] rescue nil
+        end
       end
     end
   end
