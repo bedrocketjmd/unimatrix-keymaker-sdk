@@ -8,7 +8,16 @@ module Unimatrix
 
       def before( controller )
         access_token = controller.params[ 'access_token' ]
-        realm_uuid = controller.realm_uuid || controller.realm.uuid
+        
+        realm_uuid = begin 
+          if controller.respond_to? :realm_uuid
+            controller.realm_uuid
+          elsif controller.respond_to? :realm
+            controller.realm.uuid
+          else
+            nil
+          end
+        end
 
         if access_token.present?
           policies = controller.retrieve_policies( 
