@@ -1,4 +1,4 @@
-module Unimatrix
+module Unimatrix::Authorization
 
   class Base
 

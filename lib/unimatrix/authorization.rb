@@ -11,3 +11,12 @@ require 'unimatrix/authorization/request'
 require 'unimatrix/authorization/parser'
 require 'unimatrix/authorization/serializer'
 require 'unimatrix/authorization/operation'
+
+
+# Resources
+require 'unimatrix/authorization/resources/base'
+require 'unimatrix/authorization/resources/error'
+require 'unimatrix/authorization/resources/policy'
+require 'unimatrix/authorization/resources/resource_owner'
+require 'unimatrix/authorization/resources/resource'
+require 'unimatrix/authorization/resources/resource_server'
