@@ -29,13 +29,15 @@ module Unimatrix::Authorization
 
     def destroy
       result = nil
+      response = nil
+
       Request.new.tap do | request |
         response = request.destroy( @path, @parameters )
         if response.present?
           result = response.resources
         end
       end
-      result
+      response
     end
 
     def order( by, direction = 'desc' )
@@ -90,11 +92,12 @@ module Unimatrix::Authorization
           end
         end
       end
-      result
+      response
     end
 
     def write( node, objects, &block )
       result = nil
+      response = nil
 
       Request.new.tap do | request |
         serializer = Serializer.new( objects )
@@ -113,8 +116,7 @@ module Unimatrix::Authorization
           end
         end
       end
-
-      result
+      response
     end
 
     protected; def spawn( parameters  )
