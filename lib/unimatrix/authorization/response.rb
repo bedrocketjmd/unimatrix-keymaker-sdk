@@ -15,13 +15,15 @@ module Unimatrix::Authorization
       if ( @body && @body.respond_to?( :keys ) )
         Parser.new( @body ) do | parser |
           @resources = parser.resources
-          @success = !parser.type_name?( :error )
+          @success = ( parser.type_name == 'error' )
         end
       else
         @success = false
-        @resources << Unimatrix::Error.new(
-          message: "#{ @code }: #{ http_response.message }."
-        )
+        if @code != 200
+          @resources << Error.new(
+            message: "#{ @code }: #{ http_response.message }."
+          )
+        end
       end
     end
 
