@@ -56,6 +56,7 @@ module Unimatrix
     end
 
     module ClassMethods
+
       def requires_policies( resource, options = {} )
         before_filter(
           RequiresPolicies.new( resource ),
@@ -75,18 +76,29 @@ module Unimatrix
 
     def policies
       @policies ||= begin
-        retrieve_policies( controller_name, params[:access_token], realm_uuid )
+        retrieve_policies( controller_name, params[ :access_token ], realm_uuid )
       end
     end
 
     def retrieve_policies( resource_name, access_token, realm )
       if resource_name && access_token && realm
-        resource = "realm/#{ realm }::#{ ENV['APPLICATION_NAME'] }::#{ resource_name }/*"
-        params   = "resource=#{ resource }&access_token=#{ access_token }"
-        uri      = URI.parse( "#{ ENV['KEYMAKER_URL'] }/policies?#{ params }" )
-        response = Net::HTTP.get( uri )
-        JSON.parse( response )[ 'policies' ] rescue nil
+        resource  = "realm/#{ realm }::#{ ENV['APPLICATION_NAME'] }::#{ resource_name }/*"
+        params    = "resource=#{ resource }&access_token=#{ access_token }"
+        cache_key = Digest::SHA1.hexdigest( params )
+        if defined?( Rails )
+          Rails.cache.fetch( cache_key, expires_in: 1.minute ) do
+            request_policies( params )
+          end
+        else
+          request_policies( params )
+        end
       end
+    end
+
+    def request_policies( params )
+      uri = URI.parse( "#{ ENV['KEYMAKER_URL'] }/policies?#{ params }" )
+      response = Net::HTTP.get( uri )
+      JSON.parse( response )[ 'policies' ] rescue nil
     end
     
   end
