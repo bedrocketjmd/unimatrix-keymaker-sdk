@@ -84,14 +84,7 @@ module Unimatrix
       if resource_name && access_token && realm
         resource  = "realm/#{ realm }::#{ ENV['APPLICATION_NAME'] }::#{ resource_name }/*"
         params    = "resource=#{ resource }&access_token=#{ access_token }"
-        cache_key = Digest::SHA1.hexdigest( params )
-        if defined?( Rails )
-          Rails.cache.fetch( cache_key, expires_in: 1.minute ) do
-            request_policies( params )
-          end
-        else
-          request_policies( params )
-        end
+        request_policies( params )
       end
     end
 
