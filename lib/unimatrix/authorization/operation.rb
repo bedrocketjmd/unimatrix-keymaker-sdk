@@ -92,7 +92,7 @@ module Unimatrix::Authorization
           end
         end
       end
-      response
+      result
     end
 
     def write( node, objects, &block )
