@@ -15,21 +15,20 @@ module Unimatrix
           elsif controller.respond_to? :realm
             controller.realm.uuid
           else
-            nil
+            controller.params[ :realm_uuid ]
           end
         end
 
         if access_token.present?
           policies = controller.retrieve_policies( 
-                      @resource_name, access_token, realm_uuid
-                    )
-          if policies
+                       @resource_name, access_token, realm_uuid
+                     )
+          if policies.present? && policies.is_a?( Array ) &&
+             policies.first.type_name == 'policy'
             controller.policies = policies
-            
             forbidden = true
-
-            ( policies || [] ).each do | policy |
-              if policy[ 'actions' ].include?( controller.action_name )
+            policies.each do | policy |
+              if policy.actions.include?( controller.action_name )
                 forbidden = false
               end
             end
@@ -42,7 +41,7 @@ module Unimatrix
             end
           else
             controller.render_error(
-              NotFoundError,
+              ForbiddenError,
               "The requested policies could not be retrieved."
             )
           end
@@ -70,28 +69,29 @@ module Unimatrix
       controller.extend( ClassMethods )
     end
 
-    def policies=(attributes)
+    def policies=( attributes )
       @policies = attributes
     end
 
     def policies
-      @policies ||= begin
-        retrieve_policies( controller_name, params[ :access_token ], realm_uuid )
+      @policies
+    end
+
+    def retrieve_policies( resource_name, access_token, realm_uuid )
+      if resource_name && access_token
+        request_policies( resource_name, access_token, realm_uuid )
       end
     end
 
-    def retrieve_policies( resource_name, access_token, realm )
+    def request_policies( resource_name, access_token, realm_uuid )
       if resource_name && access_token
-        realm    = realm || '*'
-        resource = "realm/#{ realm }::#{ ENV['APPLICATION_NAME'] }::#{ resource_name }/*"
-        params   = "resource=#{ resource }&access_token=#{ access_token }"
-        request_policies( params )
-    end
+        realm_uuid = realm_uuid || '*'
 
-    def request_policies( params )
-      uri = URI.parse( "#{ ENV['KEYMAKER_URL'] }/policies?#{ params }" )
-      response = Net::HTTP.get( uri )
-      JSON.parse( response )[ 'policies' ] rescue nil
+        Unimatrix::Authorization::Operation.new( '/policies' ).where( {
+          access_token: access_token,
+          resource: "realm/#{ realm_uuid }::#{ ENV['APPLICATION_NAME'] }::#{ resource_name }/*"
+        } ).query
+      end
     end
     
   end
