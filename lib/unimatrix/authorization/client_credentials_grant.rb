@@ -15,9 +15,13 @@ module Unimatrix
                      "grant_type"    => "client_credentials" }
         response = Net::HTTP.post_form( uri, params ) rescue nil
         if response.code == '200'
-          JSON.parse( response.body )[ 'access_token' ] rescue nil
+          
+          body = JSON.parse( response.body )
+          body = body[ 'token' ] if body[ 'token' ].present?
+
+          body[ 'access_token' ] rescue nil
         else
-          puts "ERROR: #{response.body}"
+          puts "ERROR: #{ response.body }"
         end
       end
     end
