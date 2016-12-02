@@ -10,10 +10,14 @@ module Unimatrix
 
       def request_token
         uri      = URI.parse( "#{ ENV[ 'KEYMAKER_URL' ] }/token" )
-        params   = { "client_id"     => @client_id,
-                     "client_secret" => @client_secret,
-                     "grant_type"    => "client_credentials" }
-        response = Net::HTTP.post_form( uri, params ) rescue nil
+        params   = { "grant_type"    => "client_credentials" }
+        
+        http = Net::HTTP.new( uri.host, uri.port )
+        request = Net::HTTP::Post.new( uri.request_uri )
+        request.basic_auth( @client_id, @client_secret )
+        request.set_form_data( params )
+        
+        response = http.request( request ) rescue nil
         if response.code == '200'
           
           body = JSON.parse( response.body )
