@@ -11,9 +11,9 @@ module Unimatrix
       def request_token
         uri      = URI.parse( "#{ ENV[ 'KEYMAKER_URL' ] }/token" )
         params   = { "grant_type" => "client_credentials" }
+        http     = Net::HTTP.new( uri.host, uri.port )
+        request  = Net::HTTP::Post.new( uri.request_uri )
         
-        http = Net::HTTP.new( uri.host, uri.port )
-        request = Net::HTTP::Post.new( uri.request_uri )
         request.basic_auth( @client_id, @client_secret )
         request.set_form_data( params )
         
