@@ -58,7 +58,7 @@ module Unimatrix
 
       def requires_policies( resource, options = {} )
         before_action(
-          RequiresPolicies.new( resource ),
+          RequiresPolicies.new( resource, options ),
           options
         )
       end
