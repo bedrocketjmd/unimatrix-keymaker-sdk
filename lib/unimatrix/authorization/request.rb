@@ -6,7 +6,7 @@ module Unimatrix::Authorization
   class Request
 
     def initialize( default_parameters = {} )
-      uri = URI.parse( Unimatrix::Authorization.configuration.url )
+      uri = URI.parse( URI.encode(Unimatrix::Authorization.configuration.url) )
 
       @http = Net::HTTP.new( uri.host, uri.port )
       @http.use_ssl = ( uri.scheme == 'https' )
