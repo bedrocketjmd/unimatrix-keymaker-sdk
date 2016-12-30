@@ -1,3 +1,7 @@
+require 'active_support'
+require 'active_support/all'
+require 'fnv'
+
 require 'unimatrix/authorization/version'
 
 require 'unimatrix/authorization/filters/requires_policies'
