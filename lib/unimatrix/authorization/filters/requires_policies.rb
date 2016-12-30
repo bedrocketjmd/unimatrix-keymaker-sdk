@@ -4,27 +4,26 @@ module Unimatrix
 
       def initialize( resource, options={} )
         @resource_name = resource
-        @resource_server = options[ :resource_server ] || ENV[ 'APPLICATION_NAME' ]
+        @resource_server = options[:resource_server] || ENV[ 'APPLICATION_NAME' ]
       end
 
       def before( controller )
         access_token = controller.params[ 'access_token' ]
-        
-        realm_uuid = begin 
+
+        realm_uuid = begin
           if controller.respond_to? :realm_uuid
             controller.realm_uuid
           elsif controller.respond_to? :realm
             controller.realm.uuid
           else
-            controller.params[ :realm_uuid ]
+            controller.params[:realm_uuid]
           end
         end
 
         if access_token.present?
-          policies = controller.retrieve_policies( @resource_name, access_token, realm_uuid, @resource_server )
+          policies = controller.retrieve_policies( @resource_name, @resource_server, access_token, realm_uuid )
 
-          if policies.present? && policies.is_a?( Array ) &&
-             policies.first.type_name == 'policy'
+          if policies.present? && policies.is_a?( Array ) && policies.first.type_name == 'policy'
             controller.policies = policies
             forbidden = true
             policies.each do | policy |
@@ -46,10 +45,10 @@ module Unimatrix
             )
           end
         else
-          controller.render_error( 
+          controller.render_error(
             MissingParameterError,
             "The parameter 'access_token' is required."
-          ) 
+          )
         end
       end
     end
@@ -57,8 +56,8 @@ module Unimatrix
     module ClassMethods
 
       def requires_policies( resource, options = {} )
-        before_action(
-          RequiresPolicies.new( resource, options ),
+        before_filter(
+          RequiresPolicies.new( resource ),
           options
         )
       end
@@ -75,28 +74,23 @@ module Unimatrix
 
     def policies
       @policies ||= begin
-        # Used by Archivist requires_permission filter. Todo: deprecate
-        retrieve_policies( @resource_name, params[ :access_token ], realm_uuid )
+        retrieve_policies( controller_name, params[ :access_token ], realm_uuid )
       end
     end
 
-    # In Rails app, this is overwritten by #retrieve_policies in railtie.rb
-    def retrieve_policies( resource_name, access_token, realm_uuid, resource_server )
+    def retrieve_policies( resource_name, resource_server, access_token, realm )
       if resource_name && access_token
-        request_policies( resource_name, access_token, realm_uuid, resource_server )
+        resource  = "realm/#{ realm }::#{ resource_server }::#{ resource_name }/*"
+        params    = "resource=#{ resource }&access_token=#{ access_token }"
+        request_policies( params )
       end
     end
 
-    def request_policies( resource_name, access_token, realm_uuid, resource_server )
-      if resource_name && access_token
-        realm_uuid = realm_uuid || '*'
-
-        Unimatrix::Authorization::Operation.new( '/policies' ).where( {
-          access_token: access_token,
-          resource: "realm/#{ realm_uuid }::#{ resource_server }::#{ resource_name }/*"
-        } ).query
-      end
+    def request_policies( params )
+      uri = URI.parse( "#{ ENV['KEYMAKER_URL'] }/policies?#{ params }" )
+      response = Net::HTTP.get( uri )
+      JSON.parse( response )[ 'policies' ] rescue nil
     end
-    
+
   end
 end
