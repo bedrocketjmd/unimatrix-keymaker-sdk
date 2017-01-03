@@ -22,8 +22,7 @@ module Unimatrix
         if access_token.present?
           policies = controller.retrieve_policies( @resource_name, access_token, realm_uuid )
 
-          if policies.present? && policies.is_a?( Array ) &&
-             policies.first.type_name == 'policy'
+          if policies.present? && policies.is_a?( Array )
             controller.policies = policies
             forbidden = true
             policies.each do | policy |
