@@ -2,8 +2,9 @@ module Unimatrix
   module Authorization
     class RequiresPolicies
 
-      def initialize( resource )
+      def initialize( resource, options={} )
         @resource_name = resource
+        @resource_server = options[ :resource_server ] || ENV[ 'APPLICATION_NAME' ]
       end
 
       def before( controller )
@@ -20,7 +21,7 @@ module Unimatrix
         end
 
         if access_token.present?
-          policies = controller.retrieve_policies( @resource_name, access_token, realm_uuid )
+          policies = controller.retrieve_policies( @resource_name, access_token, realm_uuid, @resource_server )
 
           if policies.present? && policies.is_a?( Array ) &&
              policies.first.type_name == 'policy'
@@ -57,7 +58,7 @@ module Unimatrix
 
       def requires_policies( resource, options = {} )
         before_action(
-          RequiresPolicies.new( resource ),
+          RequiresPolicies.new( resource, options ),
           options
         )
       end
@@ -80,19 +81,19 @@ module Unimatrix
     end
 
     # In Rails app, this is overwritten by #retrieve_policies in railtie.rb
-    def retrieve_policies( resource_name, access_token, realm_uuid )
+    def retrieve_policies( resource_name, access_token, realm_uuid, resource_server )
       if resource_name && access_token
-        request_policies( resource_name, access_token, realm_uuid )
+        request_policies( resource_name, access_token, realm_uuid, resource_server )
       end
     end
 
-    def request_policies( resource_name, access_token, realm_uuid )
+    def request_policies( resource_name, access_token, realm_uuid, resource_server )
       if resource_name && access_token
         realm_uuid = realm_uuid || '*'
 
         Unimatrix::Authorization::Operation.new( '/policies' ).where( {
           access_token: access_token,
-          resource: "realm/#{ realm_uuid }::#{ ENV['APPLICATION_NAME'] }::#{ resource_name }/*"
+          resource: "realm/#{ realm_uuid }::#{ resource_server }::#{ resource_name }/*"
         } ).query
       end
     end
