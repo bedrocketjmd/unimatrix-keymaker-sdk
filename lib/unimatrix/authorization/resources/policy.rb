@@ -8,7 +8,6 @@ module Unimatrix::Authorization
     field     :resource
     field     :realm_uuid
     field     :actions
-    field     :type_name
 
     has_one   :resources
     has_one   :resource_servers
