@@ -13,13 +13,15 @@ module Unimatrix
         params   = { "grant_type" => "client_credentials" }
         http     = Net::HTTP.new( uri.host, uri.port )
         request  = Net::HTTP::Post.new( uri.request_uri )
-        
+
+        http.use_ssl = true if uri.scheme == 'https'
+
         request.basic_auth( @client_id, @client_secret )
         request.set_form_data( params )
-        
+
         response = http.request( request ) rescue nil
         if response.code == '200'
-          
+
           body = JSON.parse( response.body )
           body = body[ 'token' ] if body[ 'token' ].present?
 
