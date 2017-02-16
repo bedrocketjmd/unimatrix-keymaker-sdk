@@ -19,15 +19,19 @@ module Unimatrix
         request.basic_auth( @client_id, @client_secret )
         request.set_form_data( params )
 
-        response = http.request( request ) rescue nil
-        if response.code == '200'
+        begin
+          response = http.request( request )
 
-          body = JSON.parse( response.body )
-          body = body[ 'token' ] if body[ 'token' ].present?
+          if response.code == '200'
+            body = JSON.parse( response.body )
+            body = body[ 'token' ] if body[ 'token' ].present?
 
-          body[ 'access_token' ] rescue nil
-        else
-          puts "ERROR: #{ response.body }"
+            body[ 'access_token' ] rescue nil
+          else
+            puts "ERROR: #{ response.body }"
+          end
+        rescue => e
+          puts "REQUEST FAILED: #{ e }"
         end
       end
     end
