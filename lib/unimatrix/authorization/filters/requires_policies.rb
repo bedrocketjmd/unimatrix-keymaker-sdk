@@ -84,7 +84,8 @@ module Unimatrix
         retrieve_policies( 
           @resource_name, 
           params[ :access_token ], 
-          realm_uuid 
+          realm_uuid,
+          @resource_server 
         )
       end
     end
