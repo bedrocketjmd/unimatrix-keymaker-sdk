@@ -11,8 +11,12 @@ module Unimatrix
 
     def retrieve_policies( resource_name, access_token, realm_uuid, resource_server )
       if resource_name && access_token
+        key = params.respond_to?( 'to_unsafe_h' ) ? 
+              params.to_unsafe_h.sort.to_s : 
+              params.sort.to_s
+              
         Rails.cache.fetch(
-          Digest::SHA1.hexdigest( params.to_unsafe_h.sort.to_s ),
+          Digest::SHA1.hexdigest( key ),
           expires_in: 1.minute
         ) do
           request_policies( resource_name, access_token, realm_uuid, resource_server )
