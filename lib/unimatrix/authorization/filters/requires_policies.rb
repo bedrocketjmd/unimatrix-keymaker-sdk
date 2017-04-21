@@ -21,7 +21,12 @@ module Unimatrix
         end
 
         if access_token.present?
-          policies = controller.retrieve_policies( @resource_name, access_token, realm_uuid, @resource_server )
+          policies = controller.retrieve_policies( 
+            @resource_name, 
+            access_token, 
+            realm_uuid, 
+            @resource_server 
+          )
 
           if policies.present? && policies.is_a?( Array ) &&
              policies.first.type_name == 'policy'
@@ -76,14 +81,24 @@ module Unimatrix
     def policies
       @policies ||= begin
         # Used by Archivist requires_permission filter. Todo: deprecate
-        retrieve_policies( @resource_name, params[ :access_token ], realm_uuid )
+        retrieve_policies( 
+          @resource_name, 
+          params[ :access_token ], 
+          realm_uuid,
+          @resource_server 
+        )
       end
     end
 
     # In Rails app, this is overwritten by #retrieve_policies in railtie.rb
     def retrieve_policies( resource_name, access_token, realm_uuid, resource_server )
       if resource_name && access_token
-        request_policies( resource_name, access_token, realm_uuid, resource_server )
+        request_policies( 
+          resource_name, 
+          access_token, 
+          realm_uuid, 
+          resource_server 
+        )
       end
     end
 
