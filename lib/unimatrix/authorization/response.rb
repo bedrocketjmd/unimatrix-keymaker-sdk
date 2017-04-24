@@ -14,7 +14,7 @@ module Unimatrix::Authorization
 
       if ( @body && @body.respond_to?( :keys ) )
         Parser.new( @body ) do | parser |
-          @resources = parser.resources
+          @resources = parser.resources if parser.resources
           @success = ( parser.type_name != 'error' )
         end
       else
