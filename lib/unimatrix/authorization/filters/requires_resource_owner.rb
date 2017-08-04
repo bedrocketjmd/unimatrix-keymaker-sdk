@@ -9,26 +9,13 @@ module Unimatrix
 
     class RequiresResourceOwner
       def initialize( resource, options={} )
-        @resource_name = resource
-        @resource_server = options[ :resource_server ] || ENV[ 'APPLICATION_NAME' ]
       end
 
       def before( controller )
         access_token = controller.params[ 'access_token' ]
 
-        realm_uuid = begin
-          if controller.respond_to? :realm_uuid
-            controller.realm_uuid
-          elsif controller.respond_to? :realm
-            controller.realm.uuid
-          else
-            controller.params[ :realm_uuid ]
-          end
-        end
         resource_owner = controller.request_resource_owner(
-          access_token,
-          realm_uuid,
-          @resource_server,
+          access_token
         )
       end
     end
@@ -37,7 +24,7 @@ module Unimatrix
       controller.extend( ClassMethods )
     end
 
-    def request_resource_owner( access_token, realm_uuid = '*', resource_server )
+    def request_resource_owner( access_token )
       user = Unimatrix::Authorization::Operation.new( '/resource_owner' ).
       where( {
         access_token: access_token
@@ -52,9 +39,7 @@ module Unimatrix
     def resource_owner
       @resource_owner ||= begin
         request_resource_owner(
-          params[ :access_token ],
-          params[ :realm_uuid ],
-          @resource_server,
+          params[ :access_token ]
         )
       end
     end
