@@ -3,20 +3,16 @@ module Unimatrix
 
     module ClassMethods
       def requires_resource_owner( name, options = {} )
-        before_action( RequiresResourceOwner.new( name, options ), options )
+        before_action( RequiresResourceOwner.new, options )
       end
     end
 
     class RequiresResourceOwner
-      def initialize( resource, options={} )
-      end
-
       def before( controller )
         access_token = controller.params[ 'access_token' ]
 
-        resource_owner = controller.request_resource_owner(
-          access_token
-        )
+        resource_owner =
+          controller.request_resource_owner( access_token )
       end
     end
 
@@ -26,9 +22,7 @@ module Unimatrix
 
     def request_resource_owner( access_token )
       user = Unimatrix::Authorization::Operation.new( '/resource_owner' ).
-      where( {
-        access_token: access_token
-      } ).
+      where( { access_token: access_token } ).
       query
     end
 
@@ -38,9 +32,7 @@ module Unimatrix
 
     def resource_owner
       @resource_owner ||= begin
-        request_resource_owner(
-          params[ :access_token ]
-        )
+        request_resource_owner( params[ :access_token ] )
       end
     end
 
