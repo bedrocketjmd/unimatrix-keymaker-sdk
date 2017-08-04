@@ -21,7 +21,7 @@ module Unimatrix::Authorization
           { 'Content-Type' =>'application/json' }
         )
 
-        response = Response.new( @http.request( request ) )
+        response = Response.new( @http.request( request ), path )
       rescue Timeout::Error
         response = nil
       end
@@ -31,10 +31,9 @@ module Unimatrix::Authorization
 
     def get( path, parameters = {} )
       response = nil
-
       begin
         response = Response.new(
-          @http.get( compose_request_path( path, parameters ) )
+          @http.get( compose_request_path( path, parameters ) ), path
         )
       rescue Timeout::Error
         response = nil
@@ -52,7 +51,7 @@ module Unimatrix::Authorization
           { 'Content-Type' =>'application/json' }
         )
         request.body = body.to_json
-        response = Response.new( @http.request( request ) )
+        response = Response.new( @http.request( request ), path )
       rescue Timeout::Error
         response = nil
       end

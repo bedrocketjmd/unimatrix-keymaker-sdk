@@ -6,14 +6,15 @@ module Unimatrix::Authorization
     attr_reader :body
     attr_reader :resources
 
-    def initialize( http_response )
+    def initialize( http_response, path = {} )
+      @request_path = path
       @success = http_response.is_a?( Net::HTTPOK )
       @code = http_response.code
       @resources = []
       @body = decode_response_body( http_response )
 
       if ( @body && @body.respond_to?( :keys ) )
-        Parser.new( @body ) do | parser |
+        Parser.new( @body, @request_path ) do | parser |
           @resources = parser.resources if parser.resources
           @success = ( parser.type_name != 'error' )
         end
