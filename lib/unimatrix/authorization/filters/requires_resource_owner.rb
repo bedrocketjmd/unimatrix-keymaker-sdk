@@ -29,7 +29,6 @@ module Unimatrix
           access_token,
           realm_uuid,
           @resource_server,
-          @resource_name
         )
       end
     end
@@ -38,11 +37,10 @@ module Unimatrix
       controller.extend( ClassMethods )
     end
 
-    def request_resource_owner( access_token, realm_uuid = '*', resource_server, resource_name )
+    def request_resource_owner( access_token, realm_uuid = '*', resource_server )
       user = Unimatrix::Authorization::Operation.new( '/resource_owner' ).
       where( {
-        access_token: access_token,
-        resource: "realm/#{ realm_uuid }::#{ resource_server }::#{ resource_name }/*"
+        access_token: access_token
       } ).
       query
     end
@@ -57,7 +55,6 @@ module Unimatrix
           params[ :access_token ],
           params[ :realm_uuid ],
           @resource_server,
-          @resource_name
         )
       end
     end
