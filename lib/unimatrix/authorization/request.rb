@@ -10,7 +10,7 @@ module Unimatrix::Authorization
 
       @http = Net::HTTP.new( uri.host, uri.port )
       @http.use_ssl = ( uri.scheme == 'https' )
-
+      @headers = { "API_VERSION" => Unimatrix::Authorization::VERSION }
       @default_parameters = default_parameters.stringify_keys
     end
 
@@ -33,7 +33,7 @@ module Unimatrix::Authorization
       response = nil
       begin
         response = Response.new(
-          @http.get( compose_request_path( path, parameters ) ), path
+          @http.get( compose_request_path( path, parameters ), @headers ), path
         )
       rescue Timeout::Error
         response = nil

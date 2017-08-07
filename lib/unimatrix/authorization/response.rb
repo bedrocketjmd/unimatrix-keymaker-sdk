@@ -12,7 +12,6 @@ module Unimatrix::Authorization
       @code = http_response.code
       @resources = []
       @body = decode_response_body( http_response )
-
       if ( @body && @body.respond_to?( :keys ) )
         Parser.new( @body, @request_path ) do | parser |
           @resources = parser.resources if parser.resources

@@ -22,16 +22,10 @@ module Unimatrix::Authorization
         if @content[ 'error' ]
           result = parse_resource( name, @content )
         else
-          if @content[ name ].is_a?( Array )
-            result = @content[ name ].map do | attributes |
-              self.parse_resource( name, attributes )
-            end
-          else
-            result = self.parse_resource(
-              @request_path[ 1..@request_path.length ],
-              @content
-            )
-          end
+          result = self.parse_resource(
+            @request_path[ 1..@request_path.length ],
+            @content
+          )
         end
       end
       result
