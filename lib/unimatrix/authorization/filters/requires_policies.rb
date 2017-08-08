@@ -19,6 +19,7 @@ module Unimatrix
             controller.params[ :realm_uuid ]
           end
         end
+
         if access_token.present?
           policies = controller.retrieve_policies(
             @resource_name,
@@ -27,11 +28,13 @@ module Unimatrix
             @resource_server
           )
 
-          if policies.present?
+          if policies.present? && policies.is_a?( Array )
             controller.policies = policies
             forbidden = true
-            if policies.actions.include?( controller.action_name )
-              forbidden = false
+            policies.each do | policy |
+              if policy.actions.include?( controller.action_name )
+                forbidden = false
+              end
             end
 
             if forbidden
@@ -101,11 +104,11 @@ module Unimatrix
     def request_policies( resource_name, access_token, realm_uuid, resource_server )
       if resource_name && access_token
         realm_uuid = realm_uuid || '*'
-
         Unimatrix::Authorization::Operation.new( '/policies' ).where( {
           access_token: access_token,
           resource: "realm/#{ realm_uuid }::#{ resource_server }::#{ resource_name }/*"
         } ).query
+
       end
     end
 
