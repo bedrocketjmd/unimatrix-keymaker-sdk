@@ -5,6 +5,7 @@ require 'fnv'
 require 'unimatrix/authorization/version'
 
 require 'unimatrix/authorization/filters/requires_policies'
+require 'unimatrix/authorization/filters/requires_resource_owner'
 require 'unimatrix/authorization/client_credentials_grant'
 require 'unimatrix/authorization/railtie' if defined?( Rails )
 

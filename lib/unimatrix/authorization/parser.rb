@@ -2,13 +2,14 @@ module Unimatrix::Authorization
 
   class Parser
 
-    def initialize( content = {} )
+    def initialize( content, request_path )
+      @request_path = request_path
       @content = content
       yield self if block_given?
     end
 
     def name
-      @content.keys.present? ? @content.keys.first : nil
+      @request_path[ 1..@request_path.length ]
     end
 
     def type_name
@@ -17,13 +18,21 @@ module Unimatrix::Authorization
 
     def resources
       result = nil
-
       unless self.name.blank?
-        if @content[ 'error' ]
-          result = parse_resource( name, @content )
+        if @content.respond_to?( :keys )
+          unless @content[ name ].is_a?( Array )
+            # Handle singular object response ( e.g. resource_owner or error )
+            result = parse_resource( self.name, @content )
+          else
+            # Handle object with node and array ( e.g. { policies: [ {} ] } )
+            result = @content[ name ].map do | attributes |
+              parse_resource( self.name, attributes )
+            end
+          end
         else
-          result = @content[ name ].map do | attributes |
-            self.parse_resource( name, attributes )
+          # Handle json array response e.g. [ {}, {} ]
+          result = @content.map do | attributes |
+            self.parse_resource( self.name, attributes )
           end
         end
       end
@@ -32,7 +41,6 @@ module Unimatrix::Authorization
 
     def parse_resource( name, attributes )
       resource = nil
-
       if attributes.present?
         class_name = name.singularize.camelize
         object_class = Unimatrix::Authorization.const_get( class_name ) rescue nil
@@ -43,7 +51,7 @@ module Unimatrix::Authorization
       end
       resource
     end
-    
+
   end
 
 end
