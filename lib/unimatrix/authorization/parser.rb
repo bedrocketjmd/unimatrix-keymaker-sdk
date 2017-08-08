@@ -2,7 +2,7 @@ module Unimatrix::Authorization
 
   class Parser
 
-    def initialize( content = {}, request_path = {} )
+    def initialize( content, request_path )
       @request_path = request_path
       @content = content
       yield self if block_given?
