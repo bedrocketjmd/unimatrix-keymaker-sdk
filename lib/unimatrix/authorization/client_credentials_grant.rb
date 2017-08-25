@@ -8,7 +8,7 @@ module Unimatrix
         @client_secret = args[ :client_secret ]
       end
 
-      def request_token
+      def request_token( options = nil )
         uri      = URI.parse( "#{ ENV[ 'KEYMAKER_URL' ] }/token" )
         params   = { "grant_type" => "client_credentials" }
         http     = Net::HTTP.new( uri.host, uri.port )
@@ -25,14 +25,18 @@ module Unimatrix
           if response.code == '200'
             body = JSON.parse( response.body )
             body = body[ 'token' ] if body[ 'token' ].present?
-
-            body[ 'access_token' ] rescue nil
+            result = body[ 'access_token' ] rescue nil
+            if options == 'include_expiry' 
+              body.delete('token_type') if body[ 'token_type' ].present?
+              result = body
+            end
           else
             puts "ERROR: #{ response.body }"
           end
         rescue => e
           puts "REQUEST FAILED: #{ e }"
         end
+        return result rescue nil
       end
     end
   end
