@@ -9,7 +9,6 @@ module Unimatrix
       end
 
       def request_token( options = {} )
-        binding.pry
         uri      = URI.parse( "#{ ENV[ 'KEYMAKER_URL' ] }/token" )
         params   = { "grant_type" => "client_credentials" }
         http     = Net::HTTP.new( uri.host, uri.port )
@@ -27,7 +26,6 @@ module Unimatrix
             body = JSON.parse( response.body )
             body = body[ 'token' ] if body[ 'token' ].present?
             result = body[ 'access_token' ] rescue nil
-            binding.pry
             if body.include?( 'error' )
                puts "ERROR: #{ body }"
                return body
