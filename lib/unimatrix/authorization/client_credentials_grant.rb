@@ -30,7 +30,7 @@ module Unimatrix
                puts "ERROR: #{ body }"
                return body
             end
-            if options[ 'include_expiry' ] == true
+            if options[ :include_expiry ] == true
               body.delete( 'token_type' ) if body[ 'token_type' ].present?
               result = body
             end
