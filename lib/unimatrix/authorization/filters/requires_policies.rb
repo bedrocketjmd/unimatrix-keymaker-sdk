@@ -9,8 +9,8 @@ module Unimatrix
 
       def before( controller )
         access_token = controller.params[ 'access_token' ]
-        
-        realm_uuid = begin 
+
+        realm_uuid = begin
           if controller.respond_to? :realm_uuid
             controller.realm_uuid
           elsif controller.respond_to? :realm
@@ -21,11 +21,11 @@ module Unimatrix
         end
 
         if access_token.present?
-          policies = controller.retrieve_policies( 
-            @resource_name, 
-            access_token, 
-            realm_uuid, 
-            @resource_server 
+          policies = controller.retrieve_policies(
+            @resource_name,
+            access_token,
+            realm_uuid,
+            @resource_server
           )
 
           if policies.present? && policies.is_a?( Array ) &&
@@ -40,21 +40,21 @@ module Unimatrix
 
             if forbidden
               controller.render_error(
-                ForbiddenError,
+                ::ForbiddenError,
                 "A policy permitting this action was not found."
               )
             end
           else
             controller.render_error(
-              ForbiddenError,
+              ::ForbiddenError,
               "The requested policies could not be retrieved."
             )
           end
         else
-          controller.render_error( 
-            MissingParameterError,
+          controller.render_error(
+            ::MissingParameterError,
             "The parameter 'access_token' is required."
-          ) 
+          )
         end
       end
     end
@@ -81,11 +81,11 @@ module Unimatrix
     def policies
       @policies ||= begin
         # Used by Archivist requires_permission filter. Todo: deprecate
-        retrieve_policies( 
-          @resource_name, 
-          params[ :access_token ], 
+        retrieve_policies(
+          @resource_name,
+          params[ :access_token ],
           realm_uuid,
-          @resource_server 
+          @resource_server
         )
       end
     end
@@ -93,11 +93,11 @@ module Unimatrix
     # In Rails app, this is overwritten by #retrieve_policies in railtie.rb
     def retrieve_policies( resource_name, access_token, realm_uuid, resource_server )
       if resource_name && access_token
-        request_policies( 
-          resource_name, 
-          access_token, 
-          realm_uuid, 
-          resource_server 
+        request_policies(
+          resource_name,
+          access_token,
+          realm_uuid,
+          resource_server
         )
       end
     end
@@ -112,6 +112,6 @@ module Unimatrix
         } ).query
       end
     end
-    
+
   end
 end
