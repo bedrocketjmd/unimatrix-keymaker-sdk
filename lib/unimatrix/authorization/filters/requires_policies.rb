@@ -39,19 +39,19 @@ module Unimatrix
 
             if forbidden
               controller.render_error(
-                ForbiddenError,
+                ::ForbiddenError,
                 "A policy permitting this action was not found."
               )
             end
           else
             controller.render_error(
-              ForbiddenError,
+              ::ForbiddenError,
               "The requested policies could not be retrieved."
             )
           end
         else
           controller.render_error(
-            MissingParameterError,
+            ::MissingParameterError,
             "The parameter 'access_token' is required."
           )
         end
